@@ -43,7 +43,7 @@ if else
 '''
 
 import random, requests
-from pprint import pprint
+#from pprint import pprint
 
 def top_trumps():
     #get a random number
@@ -54,47 +54,117 @@ def top_trumps():
     pokemon_id = random.randint(1, 151)
     url = f'https://pokeapi.co/api/v2/pokemon/{pokemon_id}/'
 
-    #ask for response from API
+    #connect to the API
     response = requests.get(url)
+    #check whether connection successful ( 200 = successful connection)
+    #print(response.status_code)
 
-    #get info from API
+    #get data from the API
     pokemon = response.json()
 
 #3. Create a dictionary that contains the returned Pokemon's name, id, height and weight (https://pokeapi.co/) 
     return {'name': pokemon['name'], 'id': pokemon['id'], 'height': pokemon['height'], 'weight': pokemon['weight']}
-  
-#4. Get a random Pokemon for the player and another for their opponent
+
+#4. Get a random Pokemon for the player and another for their opponent  
 def comparison():
-    #get random number for the players
-    #print out the outcome of the game
-    player = top_trumps()
+# Get multiple random Pokemon and let the player decide which one they want to use
+    number_pokemons = 3
+    player_pokemons = []
+
+    #retrieve data from API based on the number of pokemons needed using a for loop
+    for i in range(number_pokemons):
+        player_pokemons.append(top_trumps())
+
+    #get random pokemon for the opponent (computer)
     opponent = top_trumps()
+
+# Ask player which pokemon they want to use
+    #must first extract only the names from the list of player_pokemons (which contains the dictionaries of each poke with its stats)
+    pokemon_names = []
+    for pokemon in player_pokemons:
+        pokemon_names.append(pokemon['name'])
+
+    #the above can also be rewritten as a list comprehension:
+    #pokemon_names = [pokemon["name"] for pokemon in player_pokemons]
+
+    #now print out the names, each on a new line, and ask which pokemon the player wants to use
+    player_poke_choice = input(f"Choose a pokemon from the list: {", ".join(pokemon_names)}: ")
 
 #5. Ask the user which stat they want to use (id, height or weight) 
     options = ['id', 'height', 'weight']
-    player_choice = input("Choose a stat to use from id, height, weight: ")
 
-# Allow the opponent (computer) to choose a stat that they would like to compare
+# Input validation: player makes a typo or chooses a non-existent stat
+    #run an infinite loop
+    while True:
+        #ask for input
+        player_choice = input("Choose a stat to use from id, height, weight: ")
+        #if input is valid then break out of the infinite while loop
+        if player_choice in options:
+            break
+        #if input is invalid print error message and continue the loop
+        else:
+            print("Please input a valid stat.")
+
+# Allow the opponent (computer) to choose a stat
     computer_choice = random.choice(options)
 
     #below code is referencing the specific stat directly from the json library
-    player_stat = player[player_choice]
+    #get the player_choice stat from player_pokemons list based on the selected player_poke_choice name
+    #to do this must first find the pokemon dictionary in player_pokemons based on the selected player_poke_choice
+    chosen_pokemon = None
+    for pokemon in player_pokemons:
+        if pokemon['name'] == player_poke_choice:
+            #store the dictionary from the player_pokemons in a chosen_pokemon variable
+            chosen_pokemon = pokemon
+            break
+    #then, use the chosen_pokemon to find the player_choice stat and store it in player_stat
+    player_stat = chosen_pokemon[player_choice]
 
     opponent_stat = opponent[computer_choice]
 
 #6. Compare the player's and opponent's Pokemon on the chosen stat to decide who wins
     if player_stat > opponent_stat:
-        print(f"Player wins because opponent's stat was: {opponent_stat} and choice was: {computer_choice}")
+        print(f"\nYou won this round because opponent's stat was: {opponent_stat} and choice was: {computer_choice}\n")
+        #to be able to easily refer later when counting wins in the multi_round_game() function, return a keyword of who won the round
+        return 'player'
     elif player_stat < opponent_stat:
-        print(f"Player loses because opponent's stat was: {opponent_stat} and choice was: {computer_choice}")
+        print(f"\nYou lost this round because opponent's stat was: {opponent_stat} and choice was: {computer_choice}\n")
+        return 'opponent'
     else:
-        print("Draw")
+        print("\nDraw\n")
+        return 'draw'
 
-comparison()
-
-
-# Get multiple random Pokemon and let the player decide which one that they want to use
+#comparison()
 
 # Play multiple rounds and record the outcome of each round. The player with most number of rounds won, wins the game
+    # call the comparison() function for a set number of times
+    # for each time the comparison is called, log the outcome of the game into a player_wins_count and opponent_wins_count
+    # compare the number of player_wins_count with opponent to print out who won the game
+def multi_round_game():
+    player_wins_count = 0
+    opponent_wins_count = 0
+
+    print("This is a 3 round game\n")
+    print("Player who wins majority rounds will win the game!\n")
+    print("Goodluck!\n")
+
+    for i in range(3):
+        result = comparison()
+
+        if result == 'player':
+            player_wins_count += 1
+        elif result == 'opponent':
+            opponent_wins_count+= 1
+    
+    if player_wins_count > opponent_wins_count:
+        print("You won the game! Congratulations")
+    
+    elif player_wins_count < opponent_wins_count:
+        print("Tough luck! You lost the game.")
+
+    else:
+        print("There game ended in a draw!")
+
+multi_round_game()
 
 # Record high scores for players and store them in a file
