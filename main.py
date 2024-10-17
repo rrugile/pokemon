@@ -1,49 +1,5 @@
-'''
-Option [1] 
-Project Brief: Top Trumps 
-In this project you'll create a small game where players compare stats, similar to the Top Trumps card game. The basic flow of the games is: 
-1. You are given a random card with different stats 
-2. You select one of the card's stats 
-3. Another random card is selected for your opponent (the computer) 
-4. The stats of the two cards are compared 
-5. The player with the stat higher than their opponent wins 
-The standard project will use the Pokemon API, but you can use a different API if you want after completing the required tasks. 
-You will not need any additional knowledge beyond what is covered in this course to complete this project. 
-
-Required Tasks 
-
-These are the required tasks for this project. You should aim to complete these tasks before adding your own ideas to the project. 
-
-1. Generate a random number between 1 and 151 to use as the Pokemon ID number 
-# random library (x)
-# get pokemon id using rand(1,151)
-
-2. Using the Pokemon API get a Pokemon based on its ID number 
-# import request
-# request.get()
-# url https://pokeapi.co/api/v2/pokemon/{    }/
-
-3. Create a dictionary that contains the returned Pokemon's name, id, height and weight (★ https://pokeapi.co/) 
-# dict = {key:value}
-
-4. Get a random Pokemon for the player and another for their opponent 
-player_pokemon 
-opponent_pokemon
-
-5. Ask the user which stat they want to use (id, height or weight) 
-get_input = input("")
-
-6. Compare the player's and opponent's Pokemon on the chosen stat to decide who wins
-    height
-    players_stat > < =
-for loop:
-
-if else
-
-'''
-
 import random, requests
-#from pprint import pprint
+from datetime import datetime
 
 def top_trumps():
     #get a random number
@@ -84,11 +40,20 @@ def comparison():
     for pokemon in player_pokemons:
         pokemon_names.append(pokemon['name'])
 
-    #the above can also be rewritten as a list comprehension:
-    #pokemon_names = [pokemon["name"] for pokemon in player_pokemons]
+   #then get the player_choice stat based on chosen Pokemon:
+    # ensure input validation is in place by running everything in a loop
+    chosen_pokemon = None #{'pokemon': "stats"}
+    while not chosen_pokemon:
+        player_poke_choice = input(f"Choose a Pokémon from the list: {', '.join(pokemon_names)}: ")
+        for pokemon in player_pokemons:
+            if pokemon['name'] == player_poke_choice:
+                chosen_pokemon = pokemon
+                print("\nAwesome choice!\n")
+                print(f"Here are the stats of your chosen Pokemon: {chosen_pokemon}")
+                break #for improved code quality (if no break then loop continues looking for 'name' in multi_poke list even after finding it)
+        if not chosen_pokemon:
+            print("Please input a valid Pokemon name.\n")
 
-    #now print out the names, each on a new line, and ask which pokemon the player wants to use
-    player_poke_choice = input(f"Choose a pokemon from the list: {", ".join(pokemon_names)}: ")
 
 #5. Ask the user which stat they want to use (id, height or weight) 
     options = ['id', 'height', 'weight']
@@ -108,7 +73,6 @@ def comparison():
 # Allow the opponent (computer) to choose a stat
     computer_choice = random.choice(options)
 
-    #below code is referencing the specific stat directly from the json library
     #get the player_choice stat from player_pokemons list based on the selected player_poke_choice name
     #to do this must first find the pokemon dictionary in player_pokemons based on the selected player_poke_choice
     chosen_pokemon = None
@@ -134,8 +98,6 @@ def comparison():
         print("\nDraw\n")
         return 'draw'
 
-#comparison()
-
 # Play multiple rounds and record the outcome of each round. The player with most number of rounds won, wins the game
     # call the comparison() function for a set number of times
     # for each time the comparison is called, log the outcome of the game into a player_wins_count and opponent_wins_count
@@ -158,13 +120,76 @@ def multi_round_game():
     
     if player_wins_count > opponent_wins_count:
         print("You won the game! Congratulations")
+        return 'win'
     
     elif player_wins_count < opponent_wins_count:
         print("Tough luck! You lost the game.")
+        return 'lose'
 
     else:
         print("There game ended in a draw!")
+        return 'draw'
 
-multi_round_game()
+def high_scores():
+    longest_streak = 0
+    current_streak = 0
 
-# Record high scores for players and store them in a file
+    #loop through the game to allow player keep their streak
+    while True:
+        result = multi_round_game()
+
+        # if game is won then increment current_streak
+        if result == 'win':
+            current_streak += 1
+        # if game is lost then reset current_streak
+        elif result == 'lose':
+            current_streak == 0
+        # if game is a draw then do not change current_streak
+        else:
+            pass
+
+        if current_streak > longest_streak:
+            longest_streak = current_streak
+        
+        #ask if player wants to keep playing the game
+        #if answer is not yes then streak is lost
+        play_again = input("Would you like to play again and continue your streak? [yes/no]: ")
+        if play_again != 'yes':
+            break
+
+    #create and open a new file to store high_scores
+    with open('high_scores.txt', 'w+') as file:
+        #get the current_time
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+        #add an entry of longest_streak
+        file.write(f"Longest streak of wins: {longest_streak} at {current_time}\n")
+
+def view_high_scores():
+    with open("best_scores.txt", "r") as file:
+        contents = file.read()
+        print(contents)
+
+def menu():
+    print("[1] Play the game")
+    print("[2] View high scores")
+    print("[3] Exit the game")
+
+menu()
+option = int(input("Enter your option: "))
+
+while option != 3:
+    if option == 1:
+        high_scores()
+
+    elif option == 2:
+        view_high_scores()
+
+    else:
+        "Please enter a valid option"
+
+    print()
+    menu()
+    option = int(input("Enter your option: "))
+
+print()
+print("Thank you for playing! Goodbye.\n")
