@@ -1,3 +1,4 @@
+# Pokemon game - updated in VS Code
 import random, requests
 from datetime import datetime
 
