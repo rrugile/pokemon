@@ -128,7 +128,7 @@ def multi_round_game():
         return 'lose'
 
     else:
-        print("There game ended in a draw!")
+        print("The game ended in a draw!")
         return 'draw'
 
 def high_scores():
@@ -144,7 +144,7 @@ def high_scores():
             current_streak += 1
         # if game is lost then reset current_streak
         elif result == 'lose':
-            current_streak == 0
+            current_streak = 0
         # if game is a draw then do not change current_streak
         else:
             pass
@@ -166,7 +166,7 @@ def high_scores():
         file.write(f"Longest streak of wins: {longest_streak} at {current_time}\n")
 
 def view_high_scores():
-    with open("best_scores.txt", "r") as file:
+    with open("high_scores.txt", "r") as file:
         contents = file.read()
         print(contents)
 

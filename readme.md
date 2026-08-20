@@ -28,7 +28,7 @@ This is a text-based Pokémon Top Trumps game that utilizes the [PokéAPI](https
 ## Requirements
 
 - Python 3.x
-- `requests` library (install using `pip install requests`)
+- Dependencies listed in 'requirements.txt'
 
 ## Installation
 
@@ -40,7 +40,7 @@ git clone https://github.com/rrugile/pokemon.git
 cd pokemon
 
 # Install dependencies
-pip install requests
+pip install -r requirements.txt
 
 # Run the game
 python main.py
@@ -51,6 +51,8 @@ python main.py
 ```
 ├── main.py           # Main game script
 ├── high_scores.txt   # Stores high scores
+├── README.md         # Project documentation
+├── high_scores.txt   # Generated file storing high scores
 ```
 
 ## Future Improvements
