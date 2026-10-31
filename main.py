@@ -166,9 +166,14 @@ def high_scores():
         file.write(f"Longest streak of wins: {longest_streak} at {current_time}\n")
 
 def view_high_scores():
-    with open("high_scores.txt", "r") as file:
-        contents = file.read()
-        print(contents)
+    high_score_file = "high_scores.txt"
+    # Handle the case where no scores have been saved yet.
+    try:
+        with open(high_score_file, 'r') as file:
+            contents = file.read()
+            print(contents)
+    except FileNotFoundError:
+        print("No high scores yet. Play a game first!")
 
 def menu():
     print("[1] Play the game")
