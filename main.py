@@ -1,4 +1,3 @@
-# Pokemon game - updated in VS Code
 import random, requests
 from datetime import datetime
 
@@ -174,28 +173,32 @@ def view_high_scores():
             print(contents)
     except FileNotFoundError:
         print("No high scores yet. Play a game first!")
+        menu()
+        get_choice()
 
 def menu():
     print("[1] Play the game")
     print("[2] View high scores")
     print("[3] Exit the game")
 
+def get_choice():
+    while True:
+        try:
+            option = int(input("Enter your option: "))
+        except ValueError:
+            print("Please choose from 1, 2, or 3")
+            continue
+        if option not in (1, 2, 3):
+            print("Please enter a valid option")
+            continue
+        return option
 menu()
-option = int(input("Enter your option: "))
+chosen_option = get_choice()
 
-while option != 3:
-    if option == 1:
-        high_scores()
-
-    elif option == 2:
-        view_high_scores()
-
-    else:
-        "Please enter a valid option"
-
+if chosen_option == 1:
+    high_scores()
+elif chosen_option == 2:
+    view_high_scores()
+elif chosen_option == 3:
     print()
-    menu()
-    option = int(input("Enter your option: "))
-
-print()
-print("Thank you for playing! Goodbye.\n")
+    print("Thank you for playing! Goodbye.\n")
