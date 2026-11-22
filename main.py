@@ -1,9 +1,7 @@
 import random, requests
 from datetime import datetime
 
-def top_trumps():
-    #get a random number
-    #print the stats
+def get_rand_pokemon():
 #1. Generate a random number between 1 and 151 to use as the Pokemon ID number 
 #2. Using the Pokemon API get a Pokemon based on its ID number 
 
@@ -23,62 +21,47 @@ def top_trumps():
 
 #4. Get a random Pokemon for the player and another for their opponent  
 def comparison():
-# Get multiple random Pokemon and let the player decide which one they want to use
-    number_pokemons = 3
-    player_pokemons = []
-
-    #retrieve data from API based on the number of pokemons needed using a for loop
-    for i in range(number_pokemons):
-        player_pokemons.append(top_trumps())
-
-    #get random pokemon for the opponent (computer)
-    opponent = top_trumps()
-
-# Ask player which pokemon they want to use
-    #must first extract only the names from the list of player_pokemons (which contains the dictionaries of each poke with its stats)
+    player_pokemon = []
     pokemon_names = []
-    for pokemon in player_pokemons:
-        pokemon_names.append(pokemon['name'])
 
-   #then get the player_choice stat based on chosen Pokemon:
-    # ensure input validation is in place by running everything in a loop
-    chosen_pokemon = None #{'pokemon': "stats"}
+    for i in range(3):
+        player_pokemon.append(get_rand_pokemon())
+        pokemon_names.append(player_pokemon[i]['name'])
+
+    opponent = get_rand_pokemon()
+
+    chosen_pokemon = None
     while not chosen_pokemon:
         player_poke_choice = input(f"Choose a Pokémon from the list: {', '.join(pokemon_names)}: ")
-        for pokemon in player_pokemons:
+        for pokemon in player_pokemon:
             if pokemon['name'] == player_poke_choice:
                 chosen_pokemon = pokemon
                 print("\nAwesome choice!\n")
                 print(f"Here are the stats of your chosen Pokemon: {chosen_pokemon}")
-                break #for improved code quality (if no break then loop continues looking for 'name' in multi_poke list even after finding it)
+                break
         if not chosen_pokemon:
             print("Please input a valid Pokemon name.\n")
-
 
 #5. Ask the user which stat they want to use (id, height or weight) 
     options = ['id', 'height', 'weight']
 
 # Input validation: player makes a typo or chooses a non-existent stat
-    #run an infinite loop
     while True:
-        #ask for input
         player_choice = input("Choose a stat to use from id, height, weight: ")
-        #if input is valid then break out of the infinite while loop
+
         if player_choice in options:
             break
-        #if input is invalid print error message and continue the loop
         else:
             print("Please input a valid stat.")
 
-# Allow the opponent (computer) to choose a stat
     computer_choice = random.choice(options)
 
-    #get the player_choice stat from player_pokemons list based on the selected player_poke_choice name
-    #to do this must first find the pokemon dictionary in player_pokemons based on the selected player_poke_choice
+    #get the player_choice stat from player_pokemon list based on the selected player_poke_choice name
+    #to do this must first find the pokemon dictionary in player_pokemon based on the selected player_poke_choice
     chosen_pokemon = None
-    for pokemon in player_pokemons:
+    for pokemon in player_pokemon:
         if pokemon['name'] == player_poke_choice:
-            #store the dictionary from the player_pokemons in a chosen_pokemon variable
+            #store the dictionary from the player_pokemon in a chosen_pokemon variable
             chosen_pokemon = pokemon
             break
     #then, use the chosen_pokemon to find the player_choice stat and store it in player_stat
